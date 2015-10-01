@@ -72,7 +72,7 @@ public class StatusBar extends CordovaPlugin {
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     try {
                     // Using reflection makes sure any 5.0+ device will work without having to compile with SDK level 21
-                    window.getClass().getDeclaredMethod("setNavigationBarColor", int.class).invoke(window, Color.parseColor(navcolor));
+                    window.getClass().getDeclaredMethod("setNavigationBarColor", int.class).invoke(window, navcolor);
                     } catch (IllegalArgumentException ignore) {
                         Log.e(TAG, "Invalid hexString argument, use f.i. '#999999'");
                     } catch (Exception ignore) {

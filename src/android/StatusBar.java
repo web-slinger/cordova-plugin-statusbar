@@ -24,6 +24,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
+import android.R;
 import android.util.Log;
 import android.view.Window;
 import android.view.View;
@@ -52,9 +53,6 @@ public class StatusBar extends CordovaPlugin {
         Log.v(TAG, "StatusBar: initialization");
         super.initialize(cordova, webView);
 
-        Window window = cordova.getActivity().getWindow();
-        window.clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
-
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             int color = Color.parseColor(preferences.getString("StatusBarBackgroundColor", "#000000"));
             int navcolor = Color.parseColor(preferences.getString("MultiTaskBarColor", "#999999"));
@@ -72,11 +70,13 @@ public class StatusBar extends CordovaPlugin {
             window.setStatusBarColor(color);
             window.setNavigationBarColor(navcolor);
         } else {
+            Window window = cordova.getActivity().getWindow();
+            window.clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
             setStatusBarBackgroundColor(preferences.getString("StatusBarBackgroundColor", "#000000"));
         }
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             int color = Color.parseColor(preferences.getString("MultiTaskBarColor", "#999999"));
-            getWindow().setNavigationBarColor(getResources().getColor(R.color.Theme_color));
+            cordova.getActivity().getWindow().setNavigationBarColor(getResources().getColor(R.color.Theme_color));
         }
     }
 

@@ -29,7 +29,7 @@
     <keywords>cordova,statusbar</keywords>
 
     <engines>
-            <engine name="cordova" version=">=3.0.0" />
+            <engine name="cordova" version=">=3.7.0" />
     </engines>
 
     <js-module src="www/statusbar.js" name="statusbar">
@@ -37,7 +37,7 @@
     </js-module>
 
     <platform name="android">
-        <source-file src="src/android/StatusBar.java" target-dir="src/com/webslinger/statusbar" />
+        <source-file src="src/android/StatusBar.java" target-dir="org/apache/cordova/statusbar" />
 
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="StatusBar">

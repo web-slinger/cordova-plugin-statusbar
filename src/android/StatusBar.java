@@ -76,7 +76,7 @@ public class StatusBar extends CordovaPlugin {
         }
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             int color = Color.parseColor(preferences.getString("MultiTaskBarColor", "#999999"));
-            cordova.getActivity().getWindow().setNavigationBarColor(getResources().getColor(R.color.Theme_color));
+            cordova.getActivity().getWindow().setNavigationBarColor(color);
         }
     }
 

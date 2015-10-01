@@ -142,7 +142,7 @@ public class StatusBar extends CordovaPlugin {
     
     public void setMultitaskHeaderColor(final String colorHeader) {
         if (colorHeader == null || colorHeader.isEmpty()) {
-            colorHeader == "#000000"
+            colorHeader = "#000000";
         } 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             int navcolor = Color.parseColor(colorHeader);

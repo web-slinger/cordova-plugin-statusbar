@@ -53,29 +53,19 @@ public class StatusBar extends CordovaPlugin {
         Log.v(TAG, "StatusBar: initialization");
         super.initialize(cordova, webView);
 
+        Window window = cordova.getActivity().getWindow();
+        window.clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+        setStatusBarBackgroundColor(preferences.getString("StatusBarBackgroundColor", "#000000"));
+
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            int color = Color.parseColor(preferences.getString("StatusBarBackgroundColor", "#000000"));
-            int navcolor = Color.parseColor(preferences.getString("MultiTaskBarColor", "#999999"));
-            ActivityManager activityManager = (ActivityManager) cordova.getActivity().getSystemService(Context.ACTIVITY_SERVICE);
-            for(ActivityManager.AppTask appTask : activityManager.getAppTasks()) {
-                if(appTask.getTaskInfo().id == cordova.getActivity().getTaskId()) {
-                    ActivityManager.TaskDescription description = appTask.getTaskInfo().taskDescription;
-                    cordova.getActivity().setTaskDescription(new ActivityManager.TaskDescription(description.getLabel(), description.getIcon(), color));
-                }
-            }
-            Window window = cordova.getActivity().getWindow();
+            int navcolor = Color.parseColor(preferences.getString("MultiTaskBarColor", "#000000"));
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-            window.setStatusBarColor(color);
             window.setNavigationBarColor(navcolor);
-        } else {
-            Window window = cordova.getActivity().getWindow();
-            window.clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
-            setStatusBarBackgroundColor(preferences.getString("StatusBarBackgroundColor", "#000000"));
-        }
+        } 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            int color = Color.parseColor(preferences.getString("MultiTaskBarColor", "#999999"));
+            int color = Color.parseColor(preferences.getString("MultiTaskBarColor", "#000000"));
             cordova.getActivity().getWindow().setNavigationBarColor(color);
         }
     }

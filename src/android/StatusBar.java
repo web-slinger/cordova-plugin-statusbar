@@ -20,10 +20,12 @@
 package org.apache.cordova.statusbar;
 
 import android.app.Activity;
+import android.content.Context;//NEW
 import android.graphics.Color;
 import android.os.Build;
 import android.util.Log;
 import android.view.Window;
+import android.view.View;//NEW
 import android.view.WindowManager;
 
 import org.apache.cordova.CallbackContext;
@@ -59,7 +61,7 @@ public class StatusBar extends CordovaPlugin {
 
                 // Read 'StatusBarBackgroundColor' from config.xml, default is #000000.
                 setStatusBarBackgroundColor(preferences.getString("StatusBarBackgroundColor", "#000000"));
-                setMultitaskHeaderColor(prefernces.getString("MultiTaskBarColor","#000000"));
+                setMultitaskHeaderColor(preferences.getString("MultiTaskBarColor","#000000"));
             }
         });
     }

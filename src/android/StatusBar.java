@@ -20,12 +20,12 @@
 package org.apache.cordova.statusbar;
 
 import android.app.Activity;
-import android.content.Context;//NEW
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
 import android.util.Log;
 import android.view.Window;
-import android.view.View;//NEW
+import android.view.View;
 import android.view.WindowManager;
 
 import org.apache.cordova.CallbackContext;
@@ -61,11 +61,24 @@ public class StatusBar extends CordovaPlugin {
 
                 // Read 'StatusBarBackgroundColor' from config.xml, default is #000000.
                 setStatusBarBackgroundColor(preferences.getString("StatusBarBackgroundColor", "#000000"));
-                int navcolor = Color.parseColor(preferences.getString("MultiTaskBarColor","#999999"));
+                
+                int navcolor = Color.parseColor(preferences.getString("MultiTaskBarColor","#000000"));
                 
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
                     window.setNavigationBarColor(navcolor);
+                }
+                
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    try {
+                    // Using reflection makes sure any 5.0+ device will work without having to compile with SDK level 21
+                    window.getClass().getDeclaredMethod("setNavigationBarColor", int.class).invoke(window, Color.parseColor(navcolor));
+                    } catch (IllegalArgumentException ignore) {
+                        Log.e(TAG, "Invalid hexString argument, use f.i. '#999999'");
+                    } catch (Exception ignore) {
+                        // this should not happen, only in case Android removes this method in a version > 21
+                        Log.w(TAG, "Method window.setStatusBarColor not found for SDK level " + Build.VERSION.SDK_INT);
+                    }
                 }
             }
         });

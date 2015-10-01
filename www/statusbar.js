@@ -83,7 +83,7 @@ var StatusBar = {
         exec(null, null, "StatusBar", "backgroundColorByHexString", [hexString]);
     },
     
-    setMultitaskHeaderColorByHex: function (hexString) {
+    multiTaskHeaderColorByHexString: function (hexString) {
         if (hexString.charAt(0) !== "#") {
             hexString = "#" + hexString;
         }
@@ -94,6 +94,10 @@ var StatusBar = {
         }
 
         exec(null, null, "StatusBar", "setMultitaskHeaderColor", [hexString]);
+    },
+    
+    multiTaskHeaderColorByName: function (colorname) {
+        return StatusBar.multiTaskHeaderColorByHexString(namedColors[colorname]);
     },
     
     hide: function () {

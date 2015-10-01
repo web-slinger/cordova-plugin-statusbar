@@ -67,11 +67,6 @@ public class StatusBar extends CordovaPlugin {
                     window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
                     window.setNavigationBarColor(navcolor);
                 }
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    int color = Color.parseColor(preferences.getString("MultiTaskBarColor", "#999999"));
-                    window.setNavigationBarColor(getResources().getColor(R.color.Theme_color));
-                }
-                
             }
         });
     }

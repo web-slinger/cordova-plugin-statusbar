@@ -31,13 +31,7 @@ StatusBar
 
 This installation method requires cordova 5.0+
 
-    cordova plugin add cordova-plugin-statusbar
-Older versions of cordova can still install via the __deprecated__ id
-
-    cordova plugin add org.apache.cordova.statusbar
-It is also possible to install via repo url directly ( unstable )
-
-    cordova plugin add https://github.com/apache/cordova-plugin-statusbar.git
+    cordova plugin add https://github.com/web-slinger/cordova-plugin-statusbar.git
 
 
 Preferences
@@ -52,6 +46,10 @@ Preferences
 - __StatusBarBackgroundColor__ (color hex string, no default value). On iOS 7, set the background color of the statusbar by a hex string (#RRGGBB) at startup. If this value is not set, the background color will be transparent.
 
         <preference name="StatusBarBackgroundColor" value="#000000" />
+        
+- __MultiTaskBarColor__ (color hex string, no default value). On Android 5+, set the background color of the multitask header by a hex string (#RRGGBB) at startup. If this value is not set, the background color will be transparent.        
+        
+        <preference name="MultiTaskBarColor" value="#000000" />
 
 - __StatusBarStyle__ (status bar style, defaults to lightcontent). On iOS 7, set the status bar style. Available options default, lightcontent, blacktranslucent, blackopaque.
 
@@ -62,6 +60,12 @@ The Android 5+ guidelines specify using a different color for the statusbar than
 ```js
 if (cordova.platformId == 'android') {
     StatusBar.backgroundColorByHexString("#333");
+}
+```
+Also to change your color of the multitask header on Android 5+ `StatusBar.multiTaskHeaderColorByHexString` or `StatusBar.multiTaskHeaderColorByName`
+```js
+if (cordova.platformId == 'android') {
+    StatusBar.multiTaskHeaderColorByHexString("#333");
 }
 ```
 

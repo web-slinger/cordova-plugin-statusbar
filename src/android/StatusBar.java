@@ -61,7 +61,17 @@ public class StatusBar extends CordovaPlugin {
 
                 // Read 'StatusBarBackgroundColor' from config.xml, default is #000000.
                 setStatusBarBackgroundColor(preferences.getString("StatusBarBackgroundColor", "#000000"));
-                setMultitaskHeaderColor(preferences.getString("MultiTaskBarColor","#000000"));
+                int navcolor = Color.parseColor(preferences.getString("MultiTaskBarColor","#999999"));
+                
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+                    window.setNavigationBarColor(navcolor);
+                }
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    int color = Color.parseColor(preferences.getString("MultiTaskBarColor", "#999999"));
+                    window.setNavigationBarColor(getResources().getColor(R.color.Theme_color));
+                }
+                
             }
         });
     }
@@ -139,24 +149,6 @@ public class StatusBar extends CordovaPlugin {
                     Log.w(TAG, "Method window.setStatusBarColor not found for SDK level " + Build.VERSION.SDK_INT);
                 }
             }
-        }
-    }
-    
-    public void setMultitaskHeaderColor(final String colorHeader) {
-        if (colorHeader == null || colorHeader.isEmpty()) {
-            colorHeader = "#000000";
-        } 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            int navcolor = Color.parseColor(colorHeader);
-            final Window window = cordova.getActivity().getWindow();
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-            window.setNavigationBarColor(navcolor);
-        }
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            int navcolor = Color.parseColor(colorHeader);
-            getWindow().setNavigationBarColor(getResources().getColor(R.color.Theme_color));
         }
     }
 }

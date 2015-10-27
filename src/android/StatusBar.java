@@ -167,7 +167,7 @@ public class StatusBar extends CordovaPlugin {
             // Method and constants not available on all SDKs but we want to be able to compile this code with any SDK
             window.clearFlags(0x04000000); // SDK 19: WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.addFlags(0x80000000); // SDK 21: WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(Color.parseColor(colorPref))
+            window.setStatusBarColor(Color.parseColor(colorPref));
             
             // try {
             //     // Using reflection makes sure any 5.0+ device will work without having to compile with SDK level 21

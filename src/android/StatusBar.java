@@ -52,25 +52,32 @@ public class StatusBar extends CordovaPlugin {
         Log.v(TAG, "StatusBar: initialization");
         super.initialize(cordova, webView);
 
-        this.cordova.getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                // Clear flag FLAG_FORCE_NOT_FULLSCREEN which is set initially
-                // by the Cordova.
-                Window window = cordova.getActivity().getWindow();
-                window.clearFlags(0x00000800); // WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN
-
-                // Read 'StatusBarBackgroundColor' from config.xml, default is #000000.
-                // Read 'MultiTaskHeaderColor' from config.xml, default is #999999.
-                // Read 'NavBarColor' from config.xml, default is #000000.
-
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    setNavBarColor(preferences.getString("NavBarColor", "#000000"));
-                    setMultitaskHeaderColor(preferences.getString("MultiTaskHeaderColor", "#999999"));
-                    setStatusBarBackgroundColor(preferences.getString("StatusBarBackgroundColor", "#000000"));
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            int color = Color.parseColor(preferences.getString("StatusBarBackgroundColor", "#000000"));
+            int navcolor = Color.parseColor(preferences.getString("MultiTaskBarColor", "#000000"));
+            ActivityManager activityManager = (ActivityManager) cordova.getActivity().getSystemService(Context.ACTIVITY_SERVICE);
+            for(ActivityManager.AppTask appTask : activityManager.getAppTasks()) {
+                if(appTask.getTaskInfo().id == cordova.getActivity().getTaskId()) {
+                    ActivityManager.TaskDescription description = appTask.getTaskInfo().taskDescription;
+                    cordova.getActivity().setTaskDescription(new ActivityManager.TaskDescription(description.getLabel(), description.getIcon(), color));
                 }
             }
-        });
+            Window window = cordova.getActivity().getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+            window.setStatusBarColor(color);
+            window.setNavigationBarColor(navcolor);
+        } else {
+            Window window = cordova.getActivity().getWindow();
+            window.clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+            setStatusBarBackgroundColor(preferences.getString("StatusBarBackgroundColor", "#000000"));
+        }
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            int color = Color.parseColor(preferences.getString("MultiTaskBarColor", "#000000"));
+            cordova.getActivity().getWindow().setNavigationBarColor(color);
+        }
     }
 
     /**
@@ -129,55 +136,23 @@ public class StatusBar extends CordovaPlugin {
         return false;
     }
 
-    private void setNavBarColor(final String colorPref) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+    private void setStatusBarBackgroundColor(final String colorPref) {
+        if (Build.VERSION.SDK_INT >= 21) {
             if (colorPref != null && !colorPref.isEmpty()) {
-                colorPref = "#000000";
-            }
-
-            Window window = cordova.getActivity().getWindow();
-
-            window.addFlags(0x80000000); // WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
-            window.clearFlags(0x08000000); // WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION
-            window.setNavigationBarColor(Color.parseColor(colorPref));
-        }
-    }
-    private void setMultitaskHeaderColor(final String colorPref) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (colorPref != null && !colorPref.isEmpty()) {
-                colorPref = "#EEEEEE";
-            }
-
-            ActivityManager activityManager = (ActivityManager) cordova.getActivity().getSystemService(Context.ACTIVITY_SERVICE);
-            for(ActivityManager.AppTask appTask : activityManager.getAppTasks()) {
-                if(appTask.getTaskInfo().id == cordova.getActivity().getTaskId()) {
-                    ActivityManager.TaskDescription description = appTask.getTaskInfo().taskDescription;
-                    cordova.getActivity().setTaskDescription(new ActivityManager.TaskDescription(description.getLabel(), description.getIcon(), Color.parseColor(colorPref)));
+                final Window window = cordova.getActivity().getWindow();
+                // Method and constants not available on all SDKs but we want to be able to compile this code with any SDK
+                window.clearFlags(0x04000000); // SDK 19: WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+                window.addFlags(0x80000000); // SDK 21: WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                try {
+                    // Using reflection makes sure any 5.0+ device will work without having to compile with SDK level 21
+                    window.getClass().getDeclaredMethod("setStatusBarColor", int.class).invoke(window, Color.parseColor(colorPref));
+                } catch (IllegalArgumentException ignore) {
+                    Log.e(TAG, "Invalid hexString argument, use f.i. '#999999'");
+                } catch (Exception ignore) {
+                    // this should not happen, only in case Android removes this method in a version > 21
+                    Log.w(TAG, "Method window.setStatusBarColor not found for SDK level " + Build.VERSION.SDK_INT);
                 }
             }
-        }
-    }
-
-    private void setStatusBarBackgroundColor(final String colorPref) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (colorPref == null && colorPref.isEmpty()) {
-                colorPref = "#000000";
-            }
-            final Window window = cordova.getActivity().getWindow();
-            // Method and constants not available on all SDKs but we want to be able to compile this code with any SDK
-            window.clearFlags(0x04000000); // SDK 19: WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            window.addFlags(0x80000000); // SDK 21: WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setNavigationBarColor(Color.parseColor(colorPref));
-            // try {
-            //     // Using reflection makes sure any 5.0+ device will work without having to compile with SDK level 21
-            //     window.getClass().getDeclaredMethod("setStatusBarColor", int.class).invoke(window, Color.parseColor(colorPref));
-            // } catch (IllegalArgumentException ignore) {
-            //     Log.e(TAG, "Invalid hexString argument, use f.i. '#999999'");
-            // } catch (Exception ignore) {
-            //     // this should not happen, only in case Android removes this method in a version > 21
-            //     Log.w(TAG, "Method window.setStatusBarColor not found for SDK level " + Build.VERSION.SDK_INT);
-            // }
-
         }
     }
 }

@@ -132,6 +132,19 @@ public class StatusBar extends CordovaPlugin {
             });
             return true;
         }
+        if ("setMultitaskHeaderColor".equals(action)) {
+            this.cordova.getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        setMultitaskHeaderColor(args.getString(0));
+                    } catch (JSONException ignore) {
+                        Log.e(TAG, "Invalid hexString argument, use f.i. '#777777'");
+                    }
+                }
+            });
+            return true;
+        }
 
         return false;
     }
@@ -151,6 +164,18 @@ public class StatusBar extends CordovaPlugin {
                 } catch (Exception ignore) {
                     // this should not happen, only in case Android removes this method in a version > 21
                     Log.w(TAG, "Method window.setStatusBarColor not found for SDK level " + Build.VERSION.SDK_INT);
+                }
+            }
+        }
+    }
+    
+    private void setMultitaskHeaderColor(final String colorPref) {
+        if(Build.VERSION.SDK_INT >= 21) {
+            ActivityManager activityManager = (ActivityManager) cordova.getActivity().getSystemService(Context.ACTIVITY_SERVICE);
+            for(ActivityManager.AppTask appTask : activityManager.getAppTasks()) {
+                if(appTask.getTaskInfo().id == cordova.getActivity().getTaskId()) {
+                    ActivityManager.TaskDescription description = appTask.getTaskInfo().taskDescription;
+                    cordova.getActivity().setTaskDescription(new ActivityManager.TaskDescription(description.getLabel(), description.getIcon(), Color.parseColor(colorPref)));
                 }
             }
         }
